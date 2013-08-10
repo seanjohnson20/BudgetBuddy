@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+ 
+{% block content %}
+<div class="container">
+  <h3>Sign up</h3>
+ 
+   
+  <form action="{{ url_for('signup') }}" method=post>
+    {{ form.hidden_tag() }}
+     
+    
+    {{ form.firstname.label }}
+    {{ form.firstname }}
+    {% for message in form.firstname.errors %}
+    <div class="flash">{{ message }}</div>
+    {% endfor %}
+    
+    
+        
+    {{ form.lastname.label }}
+    {{ form.lastname }}
+    {% for message in form.lastname.errors %}
+        <div class="flash">{{ message }}</div>
+    {% endfor %}
+    
+    
+    {{ form.email.label }}
+    {{ form.email }}
+    {% for message in form.email.errors %}
+    <div class="flash">{{ message }}</div>
+    {% endfor %}
+    
+    
+    {{ form.password.label }}
+    {{ form.password }}
+    {% for message in form.password.errors %}
+    <div class="flash">{{ message }}</div>
+    {% endfor %}
+    
+    {{ form.confirm.label }}
+    {{ form.confirm }}
+    {% for message in form.confirm.errors %}
+    <div class="flash">{{ message }}</div>
+    {% endfor %}
+    <br/>
+    I accept the <a href="{{ url_for('eula') }}">terms</a> of use  {{ form.accept_eula }}  
+    {% for message in form.accept_eula.errors %}
+    <div class="flash">{{ message }}</div>
+    {% endfor %}
+     <br>
+    {{ form.submit }}
+    
+  </form>
+</div>    
+{% endblock %}

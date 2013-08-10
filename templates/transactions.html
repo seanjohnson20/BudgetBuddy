@@ -1,0 +1,124 @@
+{% extends "template.html" %}
+{% block content %}
+
+    <a class='button'  href="/logout">Logout</a>
+    <a class='button'  href="/help">Help</a>
+     <br/>
+     <br/>
+   
+    <div class="add-transaction">
+        <h2>Add a Transaction:</h2>
+        <table>
+        <tr>
+        <form action="{{ url_for('new_transaction') }}" method="post">
+
+            <td>
+            <label>Account:</label>
+            <select name="acct">
+            {% for a in accts %}
+                <option value={{a.name}}>{{a.name}}</option>
+            {% endfor %}
+            </select>
+            </td>
+
+            <td>
+            <label>Category:</label>
+            <select name="cat">
+            {% for c in cats %}
+                <option value={{c.name}}>{{c.name}}</option>
+            {% endfor %}
+            </select>
+            </td>
+            
+            <td>
+            <label>Goal:</label>
+            <select name="goal">
+            {% for g in goals %}
+                <option value={{g.description}}>{{g.description}}</option>
+            {% endfor %}
+            </select>
+            </td>
+
+            <td>
+            <label>Note:</label>
+            <input name="note" type="text">
+            </td>
+            <td>
+            
+            <td>
+            <label>Amount:</label>
+            <input name="amt" type="text" placeholder="use dash - to reduce balance">
+            </td>
+            <td>
+            
+            &nbsp;
+            &nbsp;
+            <input class="button" type="submit" value="Save">
+            </td>
+        </form>
+
+        </tr>
+        </table>
+    </div>
+    <div class="entries">
+    <br/>
+    
+    <h2>Category Balances:</h2>
+    <div class="datagrid">
+    <table>
+        <thead>
+ 
+        <tr>
+            <th width="100px"><strong>Category</strong></th>
+            <th width="100px"><strong>Balance</strong></th>
+
+        </tr>
+        </thead>
+        {% for a in cat_bal %}
+        <tr>
+            <td width="100px">{{ a.cat }}</td>
+            <td width="10px" class='money'>$ {{ a.sum }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    </div>
+    <a class='button' href='/addCat'>Manage Categories</a> &nbsp;<a class='button' href='/addAcct'>Manage Accounts</a>
+    <br/>
+    <br/>
+    
+    <h2>Transactions:</h2>
+    <div class="datagrid">
+    <table id="demoTable" >
+        <thead>
+        <tr>
+        <th width="100px"><strong>Trans. ID</strong></th>
+        <th width="125px"><strong>Trans. Date</strong></th>
+        <th width="100px"><strong>Account</strong></th>
+        <th width="100px"><strong>Category</strong></th>
+        <th width="300px"><strong>Notes</strong></th>
+        <th width="100px"><strong>Amount</strong></th>
+        <th width="75px"><strong>Delete</strong></th>
+        </tr>
+        </thead>
+    
+        {% for a in all_transactions %}
+        <td width="100px">{{ a.trans_ID }}</td>
+        <td width="125px">{{ a.trans_date }}</td>
+        <td width="100px">{{ a.acct }}</td>
+        <td width="100px">{{ a.cat }}</td>
+        <td width="300px">{{ a.notes }}</td>
+        <td width="100px" class='money'>$ {{ a.amt }}</td>
+        <td width="75px">
+            <a href="{{ url_for('delete_entry', trans_ID=a.trans_ID) }}">Delete</a>
+
+        </td>
+        </tr>
+       
+        {% endfor %}
+    </table>
+    </div>
+    <br/>
+    
+    
+
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+<div id="tabs">
+  <ul>
+    <li><a href="#tabs-1">Add Account</a></li>
+  </ul>
+<div id="tabs-1">
+  <form action="{{ url_for('add_acct') }}" method=post>
+    {{ form.hidden_tag() }}
+
+    {{ form.name.label }}
+    {{ form.name }}
+    {% for message in form.name.errors %}
+    <div class="flash">{{ message }}</div>
+    {% endfor %}
+
+    {{ form.submit }}
+  </form>
+</div> <!-- end tabs-1-->
+</div>
+</div>
+{% endblock %}

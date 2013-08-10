@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    {% block head %}
+    <title>BudgetBuddy{% block title %}{% endblock %}</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Personal Budget Saving Tool">
+    <meta name="keywords" content="Budget, Personal Finance, Banking, Saving, Planning">
+    <meta name="author" content="Sean Johnson">
+    
+    
+    <link rel=stylesheet type=text/css href="{{ url_for('static', filename='css/bootstrap.css') }}">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+      }
+    </style>
+    <link rel=stylesheet type=text/css href="{{ url_for('static', filename='css/bootstrap-responsive.css') }}">
+    <link rel=stylesheet type=text/css href="{{ url_for('static', filename='css/jquery-ui-1.10.3.custom.min.css') }}">
+    <link rel=stylesheet type=text/css href="{{ url_for('static', filename='css/main.css') }}">
+    <link rel=stylesheet type=text/css href="{{ url_for('static', filename='css/DT_bootstrap.css') }}">
+
+
+    <script src="{{ url_for('static', filename='js/bootstrap.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/jquery-1.10.2.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/jquery-ui-1.10.3.custom.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/jquery.dataTables.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/DT_bootstrap.js') }}"></script>
+
+    <script>
+      $(function() {
+        $( "#tabs" ).tabs();
+      });
+      
+      $(function() {
+        $( "#accordion" ).accordion();
+      });
+      $(function() {
+        $( "#datepicker" ).datepicker({ dateFormat: 'yy-mm-dd' });
+      });
+      
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-9248812-3', 'dogislandsoftware.com');
+      ga('send', 'pageview');
+  </script>
+
+    {% endblock %}
+  </head>
+
+  <body>
+
+    {% block navbar %}
+    <div class="navbar navbar-inverse navbar-fixed-top">  <!-- navbar-inverse for dark header -->
+        <div class="navbar-inner">
+            <div class="container">
+              <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </a>
+              <a class="brand" href="{{ url_for('index') }}">Budget Buddy</a>
+              <div class="nav-collapse">
+               <!-- <ul class="nav">
+                </ul> -->
+                {% block navbar_right %}
+                <ul class="nav pull-right">
+                    {% if 'email' in session %}
+                    <li><a href="{{ url_for('home') }}">Home</a></li>
+                    <li><a href="{{ url_for('help') }}">Help</a></li>
+                    <li><a href="{{ url_for('signout') }}">Sign Out</a></li>
+                  {% else %}
+                    <li><a href="{{ url_for('signup') }}">Sign up</a></li>
+                    <li><a href="{{ url_for('signin') }}">Sign in</a></li>
+                  {% endif %}
+                </ul>
+                {% endblock %}
+              </div><!--/.nav-collapse -->
+            </div>
+          </div>
+    </div>
+    {% endblock %}
+
+        <div class="container page" align="right">
+                {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                    <div class="flash-info">{{ session['email'] }} {{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+                {% endwith %}
+        </div> 
+    <div class="container page">
+        <div class="content">
+          {% block content %}
+
+      <!-- Main hero unit for a primary marketing message or call to action -->
+      <div class="hero-unit">
+        <h3>Budget Buddy</h3>
+        <p>Transform your savings, checking, and cash accounts with this budgeting lifesaver.  Avoid annual and unexpected budget busting pitfalls.  Divide your accounts into categories, set goals, and watch your balances grow.</p>
+        <p><a href="{{ url_for('help') }}" class="btn btn-small">Get Started  &raquo;</a></p>
+      </div>
+      
+     {% endblock %}
+        </div>
+
+        {% block footer %}
+        <div class="navbar navbar-inverse navbar-fixed-bottom">  <!-- navbar-inverse for dark header -->
+        <div class="navbar-inner">
+            <div class="container">
+              <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </a>
+              <div class="nav-collapse">
+               <!-- <ul class="nav">
+                </ul> -->
+                {% block navbar_footer %}
+                <ul class="nav pull-right">
+                    {% if 'email' in session %}
+                    
+                    <li><a href="{{ url_for('profile') }}">{{ session['email'] }}'s profile</a></li>
+                    <li><a href="mailto:DogIslandSoftware@gmail.com?Subject=Budget%20Buddy" target="_top">Contact Me</a></li>
+                    <li><a href="{{ url_for('index') }}">&copy; 2013 Dog Island Software</a></li></div>
+                    
+                  {% else %}
+                    <li><a href="mailto:info@dogislandsoftware.com?Subject=Budget%20Buddy" target="_top">Contact Me</a></li>
+                    <li><a href="{{ url_for('index') }}">&copy; 2013 Dog Island Software</a></li></div>
+                  {% endif %}
+                </ul>
+                {% endblock %}
+              </div><!--/.nav-collapse -->
+            </div>
+          </div>
+    </div>
+    {% endblock %}
+
+    </div>
+     {% block js_footer %}
+      <script src="http://twitter.github.com/bootstrap/assets/js/bootstrap.js"> </script>
+    {% endblock %}
+  </body>
+</html>
