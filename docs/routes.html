@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>routes.py</title>
+  <link rel="stylesheet" href="pycco.css">
+</head>
+<body>
+<div id="background"></div>
+<div id='container'>
+  <div class='section'>
+    <div class='docs'><h1>routes.py</h1></div>
+  </div>
+  <div class='clearall'>
+  <div class='section' id='section-0'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-0'>#</a>
+      </div>
+      <p>u.t.f.-8  line included so Jinja templates can handle '%.02f' in them.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">render_template</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">flash</span><span class="p">,</span> \
+     <span class="n">redirect</span><span class="p">,</span> <span class="n">url_for</span><span class="p">,</span> <span class="n">abort</span>
+<span class="kn">from</span> <span class="nn">database</span> <span class="kn">import</span> <span class="n">db_session</span><span class="p">,</span> <span class="n">engine</span>
+<span class="kn">from</span> <span class="nn">models</span> <span class="kn">import</span> <span class="n">User</span><span class="p">,</span> <span class="n">Accounts</span><span class="p">,</span> <span class="n">Categories</span><span class="p">,</span> <span class="n">Transactions</span><span class="p">,</span> <span class="n">Goals</span>
+<span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span>
+<span class="kn">from</span> <span class="nn">flask.ext.mail</span> <span class="kn">import</span> <span class="n">Message</span>
+<span class="kn">from</span> <span class="nn">config</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">forms</span> <span class="kn">import</span> <span class="n">SignupForm</span><span class="p">,</span> <span class="n">SigninForm</span><span class="p">,</span> <span class="n">TransactionForm</span><span class="p">,</span> <span class="n">AccountForm</span><span class="p">,</span> <span class="n">CategoryForm</span><span class="p">,</span> <span class="n">GoalForm</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">wraps</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">func</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">date</span><span class="p">,</span> <span class="n">datetime</span>
+
+<span class="n">today</span> <span class="o">=</span> <span class="n">date</span><span class="o">.</span><span class="n">today</span><span class="p">()</span>
+ 
+<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+<span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">from_object</span><span class="p">(</span><span class="s">&#39;config&#39;</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-1'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-1'>#</a>
+      </div>
+      <h1>-----------------------No Login Required ------------------------------</h1>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-2'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-2'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="nd">@app.route</span><span class="p">(</span><span class="s">&#39;/signup&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;GET&#39;</span><span class="p">,</span> <span class="s">&#39;POST&#39;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">signup</span><span class="p">():</span>
+    <span class="n">form</span> <span class="o">=</span> <span class="n">SignupForm</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="s">&#39;email&#39;</span> <span class="ow">in</span> <span class="n">session</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s">&#39;profile&#39;</span><span class="p">))</span> 
+  
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s">&#39;POST&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span> <span class="o">==</span> <span class="bp">False</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s">&#39;signup.html&#39;</span><span class="p">,</span> <span class="n">form</span><span class="o">=</span><span class="n">form</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">newuser</span> <span class="o">=</span> <span class="n">User</span><span class="p">(</span><span class="n">form</span><span class="o">.</span><span class="n">firstname</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">form</span><span class="o">.</span><span class="n">lastname</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">form</span><span class="o">.</span><span class="n">email</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">form</span><span class="o">.</span><span class="n">password</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+            <span class="n">db_session</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">newuser</span><span class="p">)</span>
+            <span class="n">db_session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+            <span class="n">session</span><span class="p">[</span><span class="s">&#39;email&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">newuser</span><span class="o">.</span><span class="n">email</span>
+            <span class="n">flash</span><span class="p">(</span><span class="s">&#39;You have successfully signed up and you are logged in&#39;</span><span class="p">)</span>
+            <span class="k">print</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">session</span><span class="p">[</span><span class="s">&#39;email&#39;</span><span class="p">]),</span><span class="s">&#39;has been successfully signed up and logged in&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s">&#39;home&#39;</span><span class="p">))</span>
+    <span class="k">elif</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s">&#39;GET&#39;</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&#39;Guest is on signup page.&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s">&#39;signup.html&#39;</span><span class="p">,</span> <span class="n">form</span><span class="o">=</span><span class="n">form</span><span class="p">)</span>
+
+        
+<span class="nd">@app.route</span><span class="p">(</span><span class="s">&#39;/signin&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;GET&#39;</span><span class="p">,</span> <span class="s">&#39;POST&#39;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">signin</span><span class="p">():</span>
+    <span class="n">form</span> <span class="o">=</span> <span class="n">SigninForm</span><span class="p">()</span>
+      
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s">&#39;POST&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span> <span class="o">==</span> <span class="bp">False</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s">&#39;signin.html&#39;</span><span class="p">,</span> <span class="n">form</span><span class="o">=</span><span class="n">form</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">session</span><span class="p">[</span><span class="s">&#39;email&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">email</span><span class="o">.</span><span class="n">data</span>
+            <span class="n">flash</span><span class="p">(</span><span class="s">&#39;You are logged in&#39;</span><span class="p">)</span>
+            <span class="k">print</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">session</span><span class="p">[</span><span class="s">&#39;email&#39;</span><span class="p">]),</span><span class="s">&#39;is logged in&#39;</span><span class="p">)</span> 
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s">&#39;home&#39;</span><span class="p">))</span>
+                
+    <span class="k">elif</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s">&#39;GET&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s">&#39;signin.html&#39;</span><span class="p">,</span> <span class="n">form</span><span class="o">=</span><span class="n">form</span><span class="p">)</span>      
+        
+        
+<span class="nd">@app.route</span><span class="p">(</span><span class="s">&quot;/&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">index</span><span class="p">():</span>
+    <span class="k">if</span> <span class="s">&#39;email&#39;</span> <span class="ow">in</span> <span class="n">session</span><span class="p">:</span>
+        <span class="k">print</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">session</span><span class="p">[</span><span class="s">&#39;email&#39;</span><span class="p">]),</span><span class="s">&#39;is on Index&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&#39;Guest is on Index&#39;</span><span class="p">)</span>
+        
+    <span class="n">usrs</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">User</span><span class="o">.</span><span class="n">email</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-3'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-3'>#</a>
+      </div>
+      <p>usrs = db_session.query(User).order_by(User.firstname)</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s">&#39;index.html&#39;</span><span class="p">,</span> <span class="n">usrs</span><span class="o">=</span><span class="n">usrs</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-4'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-4'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="nd">@app.route</span><span class="p">(</span><span class="s">&quot;/eula/&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">eula</span><span class="p">():</span>
+    <span class="k">if</span> <span class="s">&#39;email&#39;</span> <span class="ow">in</span> <span class="n">session</span><span class="p">:</span>
+        <span class="k">print</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">session</span><span class="p">[</span><span class="s">&#39;email&#39;</span><span class="p">]),</span><span class="s">&#39;is on EULA&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&#39;Guest is on EULA&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s">&#39;eula.html&#39;</span><span class="p">)</span>
+   
+   
+<span class="nd">@app.route</span><span class="p">(</span><span class="s">&quot;/about/&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">about</span><span class="p">():</span>
+    <span class="k">if</span> <span class="s">&#39;email&#39;</span> <span class="ow">in</span> <span class="n">session</span><span class="p">:</span>
+        <span class="k">print</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">session</span><span class="p">[</span><span class="s">&#39;email&#39;</span><span class="p">]),</span><span class="s">&#39;is on About&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&#39;Guest is on About&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s">&#39;about.html&#39;</span><span class="p">)</span>
+   
+        
+<span class="nd">@app.route</span><span class="p">(</span><span class="s">&quot;/help/&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">help</span><span class="p">():</span>
+    <span class="k">if</span> <span class="s">&#39;email&#39;</span> <span class="ow">in</span> <span class="n">session</span><span class="p">:</span>
+        <span class="k">print</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">session</span><span class="p">[</span><span class="s">&#39;email&#39;</span><span class="p">]),</span><span class="s">&#39;is on Help&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&#39;Guest is on Help&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s">&#39;help.html&#39;</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-5'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-5'>#</a>
+      </div>
+      <h1>-----------------------Login Required ------------------------------ ##</h1>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-6'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-6'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">def</span> <span class="nf">login_required</span><span class="p">(</span><span class="n">test</span><span class="p">):</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-7'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-7'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="nd">@wraps</span><span class="p">(</span><span class="n">test</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">wrap</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="s">&#39;email&#39;</span> <span class="ow">in</span> <span class="n">session</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">test</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">flash</span><span class="p">(</span><span class="s">&#39;You need to login first&#39;</span><span class="p">)</span>
+            <span class="k">print</span><span class="p">(</span><span class="s">&#39;Guest: You need to login first&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s">&#39;signin&#39;</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">wrap</span>
+
+    
+<span class="nd">@app.route</span><span class="p">(</span><span class="s">&quot;/home/&quot;</span><span class="p">)</span>
+<span class="nd">@login_required</span>
+<span class="k">def</span> <span class="nf">home</span><span class="p">():</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-8'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-8'>#</a>
+      </div>
+      <p>goals by session user</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="n">con</span><span class="o">=</span><span class="n">engine</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+    <span class="n">goals</span> <span class="o">=</span> <span class="n">con</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&quot;&quot;&quot;select id, email, category, description, target, round(amount/((julianday(target)-julianday(&#39;now&#39;))/30),2) as &#39;monthly&#39;, round((((julianday(target)-julianday(datetime(&#39;now&#39;)))/30)),1) as &#39;months&#39;,</span>
+<span class="s">round((julianday(target)-julianday(datetime(&#39;now&#39;))),0) as &#39;days&#39;, round(goals.amount,0) as &#39;amount&#39;</span>
+<span class="s">from goals</span>
+<span class="s">where email=:param</span>
+<span class="s">order by category&quot;&quot;&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s">&quot;param&quot;</span><span class="p">:</span><span class="n">session</span><span class="p">[</span><span class="s">&#39;email&#39;</span><span class="p">]}</span> <span class="p">)</span>
+    
+    <span class="n">progress</span> <span class="o">=</span> <span class="n">con</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&quot;&quot;&quot;select goals.category, goals.description, ifnull(round(sum(transactions.amount),2), 0) as &#39;sum&#39;, round(((julianday(target)-julianday(datetime(&#39;now&#39;)))/30),1) as &#39;months&#39;, round((julianday(target)-julianday(datetime(&#39;now&#39;))),0) as &#39;days&#39;,</span>
+<span class="s">round(goals.amount,2) as &#39;goal&#39;, ifnull((sum(transactions.amount)/goals.amount*100),0) as &#39;progress&#39; </span>
+<span class="s">from goals LEFT JOIN transactions on goals.category=transactions.category and goals.description=transactions.goal</span>
+<span class="s">and goals.email=transactions.email</span>
+<span class="s">where goals.email=:param </span>
+<span class="s">and goals.amount is not null </span>
+<span class="s">group by goals.category, goals.description</span>
+<span class="s">order by goals.category&quot;&quot;&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s">&quot;param&quot;</span><span class="p">:</span><span class="n">session</span><span class="p">[</span><span class="s">&#39;email&#39;</span><span class="p">]}</span> <span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-9'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-9'>#</a>
+      </div>
+      <p>transactions by session user</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="n">transactions</span> <span class="o">=</span> <span class="n">con</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&quot;select * from transactions where email=:param order by trans_date desc&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s">&quot;param&quot;</span><span class="p">:</span><span class="n">session</span><span class="p">[</span><span class="s">&#39;email&#39;</span><span class="p">]}</span> <span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-10'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-10'>#</a>
+      </div>
+      <p>accounts by session user</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="n">accounts</span> <span class="o">=</span> <span class="n">con</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&quot;select accounts.id, accounts.name,  ifnull(round(sum(transactions.amount),2),0) as &#39;sum&#39;  from  accounts left join transactions on accounts.name=transactions.account and accounts.email=transactions.email where accounts.email=:param group by accounts.name order by accounts.name&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s">&quot;param&quot;</span><span class="p">:</span><span class="n">session</span><span class="p">[</span><span class="s">&#39;email&#39;</span><span class="p">]}</span> <span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-11'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-11'>#</a>
+      </div>
+      <p>categories by session user</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="n">categories</span> <span class="o">=</span> <span class="n">con</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&quot;select categories.id, categories.name, ifnull(round(sum(transactions.amount),2),0) as &#39;sum&#39; from categories left join transactions on categories.name=transactions.category and categories.email=transactions.email where categories.email=:param group by categories.name order by categories.name&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s">&quot;param&quot;</span><span class="p">:</span><span class="n">session</span><span class="p">[</span><span class="s">&#39;email&#39;</span><span class="p">]}</span> <span class="p">)</span>
+    
+    <span class="k">print</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">session</span><span class="p">[</span><span class="s">&#39;email&#39;</span><span class="p">]),</span><span class="s">&#39;is on Home&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s">&#39;home.html&#39;</span><span class="p">,</span> <span class="n">accounts</span><span class="o">=</span><span class="n">accounts</span><span class="p">,</span> <span class="n">transactions</span><span class="o">=</span><span class="n">transactions</span><span class="p">,</span> <span class="n">categories</span><span class="o">=</span><span class="n">categories</span><span class="p">,</span> <span class="n">goals</span><span class="o">=</span><span class="n">goals</span><span class="p">,</span> <span class="n">progress</span><span class="o">=</span><span class="n">progress</span><span class="p">,</span> <span class="n">today</span><span class="o">=</span><span class="n">today</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-12'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-12'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="nd">@app.route</span><span class="p">(</span><span class="s">&quot;/add_goal/&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;GET&#39;</span><span class="p">,</span> <span class="s">&#39;POST&#39;</span><span class="p">])</span>
+<span class="nd">@login_required</span>
+<span class="k">def</span> <span class="nf">add_goal</span><span class="p">():</span>
+    <span class="k">print</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">session</span><span class="p">[</span><span class="s">&#39;email&#39;</span><span class="p">]),</span><span class="s">&#39;is on add_goal&#39;</span><span class="p">)</span>
+    <span class="n">email</span> <span class="o">=</span> <span class="n">session</span><span class="p">[</span><span class="s">&#39;email&#39;</span><span class="p">]</span>
+    <span class="n">form</span> <span class="o">=</span> <span class="n">GoalForm</span><span class="p">()</span>
+    <span class="n">form</span><span class="o">.</span><span class="n">category</span><span class="o">.</span><span class="n">choices</span> <span class="o">=</span> <span class="p">[(</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="p">,</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">Categories</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">email</span><span class="o">=</span><span class="n">email</span><span class="p">)]</span>
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s">&#39;POST&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span> <span class="o">==</span> <span class="bp">False</span><span class="p">:</span>
+            <span class="k">print</span> <span class="p">(</span><span class="s">&quot;validate failed: &quot;</span><span class="p">,</span><span class="n">session</span><span class="p">[</span><span class="s">&#39;email&#39;</span><span class="p">],</span> <span class="n">form</span><span class="o">.</span><span class="n">category</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">form</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">form</span><span class="o">.</span><span class="n">description</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">form</span><span class="o">.</span><span class="n">amount</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s">&#39;addgoal.html&#39;</span><span class="p">,</span> <span class="n">form</span><span class="o">=</span><span class="n">form</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">newgoal</span> <span class="o">=</span> <span class="n">Goals</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">session</span><span class="p">[</span><span class="s">&#39;email&#39;</span><span class="p">]),</span> <span class="nb">str</span><span class="p">(</span><span class="n">form</span><span class="o">.</span><span class="n">category</span><span class="o">.</span><span class="n">data</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">form</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">data</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">form</span><span class="o">.</span><span class="n">description</span><span class="o">.</span><span class="n">data</span><span class="p">),</span> <span class="nb">float</span><span class="p">(</span><span class="n">form</span><span class="o">.</span><span class="n">amount</span><span class="o">.</span><span class="n">data</span><span class="p">))</span>
+            <span class="k">print</span> <span class="p">(</span><span class="s">&quot;validated goal data: &quot;</span><span class="p">,</span><span class="n">session</span><span class="p">[</span><span class="s">&#39;email&#39;</span><span class="p">],</span> <span class="n">form</span><span class="o">.</span><span class="n">category</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">form</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">form</span><span class="o">.</span><span class="n">description</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">form</span><span class="o">.</span><span class="n">amount</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+            <span class="n">db_session</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">newgoal</span><span class="p">)</span>
+            <span class="n">db_session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+            <span class="n">flash</span><span class="p">(</span><span class="s">&#39;You have successfully added a new Goal&#39;</span><span class="p">)</span>
+            <span class="k">print</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">session</span><span class="p">[</span><span class="s">&#39;email&#39;</span><span class="p">]),</span><span class="s">&#39;has successfully added a new Goal&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s">&#39;/home&#39;</span><span class="p">)</span>
+    <span class="k">print</span> <span class="p">(</span><span class="s">&quot;submit failed: &quot;</span><span class="p">,</span><span class="n">session</span><span class="p">[</span><span class="s">&#39;email&#39;</span><span class="p">],</span> <span class="n">form</span><span class="o">.</span><span class="n">category</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">form</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">form</span><span class="o">.</span><span class="n">description</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">form</span><span class="o">.</span><span class="n">amount</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s">&#39;addgoal.html&#39;</span><span class="p">,</span> <span class="n">form</span><span class="o">=</span><span class="n">form</span><span class="p">)</span> 
+    
+
+<span class="nd">@app.route</span><span class="p">(</span><span class="s">&quot;/add_trans/&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;GET&#39;</span><span class="p">,</span> <span class="s">&#39;POST&#39;</span><span class="p">])</span>
+<span class="nd">@login_required</span>
+<span class="k">def</span> <span class="nf">add_trans</span><span class="p">():</span>
+    <span class="k">print</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">session</span><span class="p">[</span><span class="s">&#39;email&#39;</span><span class="p">]),</span><span class="s">&#39;is on add_trans&#39;</span><span class="p">)</span>
+    <span class="n">email</span> <span class="o">=</span> <span class="n">session</span><span class="p">[</span><span class="s">&#39;email&#39;</span><span class="p">]</span>
+    <span class="n">form</span> <span class="o">=</span> <span class="n">TransactionForm</span><span class="p">()</span>
+    <span class="n">form</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">choices</span> <span class="o">=</span> <span class="p">[(</span><span class="n">a</span><span class="o">.</span><span class="n">name</span><span class="p">,</span><span class="n">a</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">Accounts</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">email</span><span class="o">=</span><span class="n">email</span><span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">Accounts</span><span class="o">.</span><span class="n">name</span><span class="p">)]</span>
+    <span class="n">form</span><span class="o">.</span><span class="n">category</span><span class="o">.</span><span class="n">choices</span> <span class="o">=</span> <span class="p">[(</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="p">,</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">Categories</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">email</span><span class="o">=</span><span class="n">email</span><span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">Categories</span><span class="o">.</span><span class="n">name</span><span class="p">)]</span>
+    <span class="n">form</span><span class="o">.</span><span class="n">goal</span><span class="o">.</span><span class="n">choices</span> <span class="o">=</span> <span class="p">[(</span><span class="n">g</span><span class="o">.</span><span class="n">description</span><span class="p">,</span><span class="n">g</span><span class="o">.</span><span class="n">description</span><span class="p">)</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">Goals</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">email</span><span class="o">=</span><span class="n">email</span><span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">Goals</span><span class="o">.</span><span class="n">description</span><span class="p">)]</span>
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s">&#39;POST&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span> <span class="o">==</span> <span class="bp">False</span><span class="p">:</span>
+            <span class="k">print</span> <span class="p">(</span><span class="s">&quot;validate failed: &quot;</span><span class="p">,</span><span class="n">session</span><span class="p">[</span><span class="s">&#39;email&#39;</span><span class="p">],</span> <span class="n">form</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">form</span><span class="o">.</span><span class="n">category</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">form</span><span class="o">.</span><span class="n">notes</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">form</span><span class="o">.</span><span class="n">amount</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s">&#39;addtrans.html&#39;</span><span class="p">,</span> <span class="n">form</span><span class="o">=</span><span class="n">form</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">newtrans</span> <span class="o">=</span> <span class="n">Transactions</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">session</span><span class="p">[</span><span class="s">&#39;email&#39;</span><span class="p">]),</span> <span class="nb">str</span><span class="p">(</span><span class="n">form</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">data</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">form</span><span class="o">.</span><span class="n">category</span><span class="o">.</span><span class="n">data</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">form</span><span class="o">.</span><span class="n">goal</span><span class="o">.</span><span class="n">data</span><span class="p">),</span> <span class="n">today</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">form</span><span class="o">.</span><span class="n">notes</span><span class="o">.</span><span class="n">data</span><span class="p">),</span> <span class="nb">float</span><span class="p">(</span><span class="n">form</span><span class="o">.</span><span class="n">amount</span><span class="o">.</span><span class="n">data</span><span class="p">))</span>
+            <span class="k">print</span> <span class="p">(</span><span class="s">&quot;validated Transaction data: &quot;</span><span class="p">,</span> <span class="n">session</span><span class="p">[</span><span class="s">&#39;email&#39;</span><span class="p">],</span> <span class="n">form</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">form</span><span class="o">.</span><span class="n">category</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">today</span><span class="p">),</span> <span class="n">form</span><span class="o">.</span><span class="n">notes</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">form</span><span class="o">.</span><span class="n">amount</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+            <span class="n">db_session</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">newtrans</span><span class="p">)</span>
+            <span class="n">db_session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+            <span class="n">flash</span><span class="p">(</span><span class="s">&#39;You have successfully added a new Transaction&#39;</span><span class="p">)</span>
+            <span class="k">print</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">session</span><span class="p">[</span><span class="s">&#39;email&#39;</span><span class="p">]),</span><span class="s">&#39;has successfully added a new Transaction&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s">&#39;/home&#39;</span><span class="p">)</span>
+    <span class="k">print</span> <span class="p">(</span><span class="s">&quot;submit failed: &quot;</span><span class="p">,</span><span class="n">session</span><span class="p">[</span><span class="s">&#39;email&#39;</span><span class="p">],</span> <span class="n">form</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">form</span><span class="o">.</span><span class="n">category</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">today</span><span class="p">,</span> <span class="n">form</span><span class="o">.</span><span class="n">notes</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">form</span><span class="o">.</span><span class="n">amount</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s">&#39;addtrans.html&#39;</span><span class="p">,</span> <span class="n">form</span><span class="o">=</span><span class="n">form</span><span class="p">)</span>
+    
+
+<span class="nd">@app.route</span><span class="p">(</span><span class="s">&quot;/add_acct/&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;GET&#39;</span><span class="p">,</span> <span class="s">&#39;POST&#39;</span><span class="p">])</span>
+<span class="nd">@login_required</span>
+<span class="k">def</span> <span class="nf">add_acct</span><span class="p">():</span>
+    <span class="k">print</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">session</span><span class="p">[</span><span class="s">&#39;email&#39;</span><span class="p">]),</span><span class="s">&#39;is on add_acct&#39;</span><span class="p">)</span>
+    <span class="n">form</span> <span class="o">=</span> <span class="n">AccountForm</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s">&#39;POST&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span> <span class="o">==</span> <span class="bp">False</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s">&#39;addacct.html&#39;</span><span class="p">,</span> <span class="n">form</span><span class="o">=</span><span class="n">form</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">newacct</span> <span class="o">=</span> <span class="n">Accounts</span><span class="p">(</span><span class="n">form</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">session</span><span class="p">[</span><span class="s">&#39;email&#39;</span><span class="p">])</span>
+            <span class="n">db_session</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">newacct</span><span class="p">)</span>
+            <span class="n">db_session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+            <span class="n">flash</span><span class="p">(</span><span class="s">&#39;You have successfully added a new Account&#39;</span><span class="p">)</span>
+            <span class="k">print</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">session</span><span class="p">[</span><span class="s">&#39;email&#39;</span><span class="p">]),</span><span class="s">&#39;has successfully added a new Account&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s">&#39;home&#39;</span><span class="p">))</span>
+    <span class="k">elif</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s">&#39;GET&#39;</span><span class="p">:</span>
+        <span class="k">print</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">session</span><span class="p">[</span><span class="s">&#39;email&#39;</span><span class="p">]),</span><span class="s">&#39;is still on add_acct&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s">&#39;addacct.html&#39;</span><span class="p">,</span> <span class="n">form</span><span class="o">=</span><span class="n">form</span><span class="p">)</span>  
+        
+       
+<span class="nd">@app.route</span><span class="p">(</span><span class="s">&#39;/edit_acct/&lt;int:id&gt;/&#39;</span><span class="p">)</span>
+<span class="nd">@login_required</span>
+<span class="k">def</span> <span class="nf">edit_acct</span><span class="p">(</span><span class="nb">id</span><span class="p">):</span>
+    <span class="k">print</span> <span class="s">&#39;Edit_Acct says ID = &#39;</span><span class="p">,</span> <span class="nb">id</span>
+    <span class="k">print</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">session</span><span class="p">[</span><span class="s">&#39;email&#39;</span><span class="p">]),</span><span class="s">&#39;is on edit_acct&#39;</span><span class="p">)</span>
+    <span class="n">acct</span><span class="o">=</span><span class="n">Accounts</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
+    <span class="n">form</span> <span class="o">=</span> <span class="n">AccountForm</span><span class="p">(</span><span class="n">obj</span><span class="o">=</span><span class="n">acct</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s">&#39;addacct.html&#39;</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="nb">id</span><span class="p">,</span> <span class="n">form</span><span class="o">=</span><span class="n">form</span><span class="p">)</span> 
+
+        
+<span class="nd">@app.route</span><span class="p">(</span><span class="s">&quot;/add_cat/&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;GET&#39;</span><span class="p">,</span> <span class="s">&#39;POST&#39;</span><span class="p">])</span>
+<span class="nd">@login_required</span>
+<span class="k">def</span> <span class="nf">add_cat</span><span class="p">():</span>
+    <span class="k">print</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">session</span><span class="p">[</span><span class="s">&#39;email&#39;</span><span class="p">]),</span><span class="s">&#39;is on add_cat&#39;</span><span class="p">)</span>
+    <span class="n">form</span> <span class="o">=</span> <span class="n">CategoryForm</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s">&#39;POST&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span> <span class="o">==</span> <span class="bp">False</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s">&#39;addcat.html&#39;</span><span class="p">,</span> <span class="n">form</span><span class="o">=</span><span class="n">form</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">newcat</span> <span class="o">=</span> <span class="n">Categories</span><span class="p">(</span><span class="n">form</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">session</span><span class="p">[</span><span class="s">&#39;email&#39;</span><span class="p">])</span>
+            <span class="n">db_session</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">newcat</span><span class="p">)</span>
+            <span class="n">db_session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+            <span class="n">flash</span><span class="p">(</span><span class="s">&#39;You have successfully added a new Category&#39;</span><span class="p">)</span>
+            <span class="k">print</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">session</span><span class="p">[</span><span class="s">&#39;email&#39;</span><span class="p">]),</span><span class="s">&#39;has successfully added a new Category&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s">&#39;home&#39;</span><span class="p">))</span>
+    <span class="k">elif</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s">&#39;GET&#39;</span><span class="p">:</span>
+        <span class="k">print</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">session</span><span class="p">[</span><span class="s">&#39;email&#39;</span><span class="p">]),</span><span class="s">&#39;is still on add_cat&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s">&#39;addcat.html&#39;</span><span class="p">,</span> <span class="n">form</span><span class="o">=</span><span class="n">form</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-13'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-13'>#</a>
+      </div>
+      <p>Delete transactions:</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="nd">@app.route</span><span class="p">(</span><span class="s">&#39;/delete_trans/&lt;int:id&gt;/&#39;</span><span class="p">,)</span>
+<span class="nd">@login_required</span>
+<span class="k">def</span> <span class="nf">delete_trans</span><span class="p">(</span><span class="nb">id</span><span class="p">):</span>
+    <span class="n">con</span><span class="o">=</span><span class="n">engine</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+    <span class="n">con</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&#39;delete from transactions where id =:id&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s">&quot;id&quot;</span><span class="p">:</span><span class="nb">id</span><span class="p">}</span> <span class="p">)</span>
+    <span class="n">flash</span><span class="p">(</span><span class="s">&#39;The transaction was deleted.&#39;</span><span class="p">)</span>
+    <span class="k">print</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">session</span><span class="p">[</span><span class="s">&#39;email&#39;</span><span class="p">]),</span> <span class="s">&#39;deleted transaction ID: &#39;</span><span class="p">,</span> <span class="nb">id</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s">&#39;home&#39;</span><span class="p">))</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-14'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-14'>#</a>
+      </div>
+      <p>Delete account:</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="nd">@app.route</span><span class="p">(</span><span class="s">&#39;/delete_acct/&lt;int:id&gt;/&#39;</span><span class="p">,)</span>
+<span class="nd">@login_required</span>
+<span class="k">def</span> <span class="nf">delete_acct</span><span class="p">(</span><span class="nb">id</span><span class="p">):</span>
+    <span class="n">con</span><span class="o">=</span><span class="n">engine</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+    <span class="n">con</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&#39;delete from accounts where id =:id&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s">&quot;id&quot;</span><span class="p">:</span><span class="nb">id</span><span class="p">}</span> <span class="p">)</span>
+    <span class="n">flash</span><span class="p">(</span><span class="s">&#39;The account was deleted.&#39;</span><span class="p">)</span>
+    <span class="k">print</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">session</span><span class="p">[</span><span class="s">&#39;email&#39;</span><span class="p">]),</span> <span class="s">&#39;deleted account ID: &#39;</span><span class="p">,</span> <span class="nb">id</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s">&#39;home&#39;</span><span class="p">))</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-15'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-15'>#</a>
+      </div>
+      <p>Delete category:</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="nd">@app.route</span><span class="p">(</span><span class="s">&#39;/delete_cat/&lt;int:id&gt;/&#39;</span><span class="p">,)</span>
+<span class="nd">@login_required</span>
+<span class="k">def</span> <span class="nf">delete_cat</span><span class="p">(</span><span class="nb">id</span><span class="p">):</span>
+    <span class="n">con</span><span class="o">=</span><span class="n">engine</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+    <span class="n">con</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&#39;delete from categories where id =:id&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s">&quot;id&quot;</span><span class="p">:</span><span class="nb">id</span><span class="p">}</span> <span class="p">)</span>
+    <span class="n">flash</span><span class="p">(</span><span class="s">&#39;The category was deleted.&#39;</span><span class="p">)</span>
+    <span class="k">print</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">session</span><span class="p">[</span><span class="s">&#39;email&#39;</span><span class="p">]),</span> <span class="s">&#39;deleted category ID: &#39;</span><span class="p">,</span><span class="nb">id</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s">&#39;home&#39;</span><span class="p">))</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-16'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-16'>#</a>
+      </div>
+      <p>Delete goal:</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="nd">@app.route</span><span class="p">(</span><span class="s">&#39;/delete_goal/&lt;int:id&gt;/&#39;</span><span class="p">,)</span>
+<span class="nd">@login_required</span>
+<span class="k">def</span> <span class="nf">delete_goal</span><span class="p">(</span><span class="nb">id</span><span class="p">):</span>
+    <span class="n">con</span><span class="o">=</span><span class="n">engine</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+    <span class="n">con</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&#39;delete from goals where id =:id&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s">&quot;id&quot;</span><span class="p">:</span><span class="nb">id</span><span class="p">}</span> <span class="p">)</span>
+    <span class="n">flash</span><span class="p">(</span><span class="s">&#39;The goal was deleted.&#39;</span><span class="p">)</span>
+    <span class="k">print</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">session</span><span class="p">[</span><span class="s">&#39;email&#39;</span><span class="p">]),</span> <span class="s">&#39;deleted goal ID: &#39;</span><span class="p">,</span><span class="nb">id</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s">&#39;home&#39;</span><span class="p">))</span>        
+    
+    
+<span class="nd">@app.route</span><span class="p">(</span><span class="s">&quot;/profile/&quot;</span><span class="p">)</span>
+<span class="nd">@login_required</span>
+<span class="k">def</span> <span class="nf">profile</span><span class="p">():</span>
+    <span class="k">if</span> <span class="s">&#39;email&#39;</span> <span class="ow">in</span> <span class="n">session</span><span class="p">:</span>
+        <span class="k">print</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">session</span><span class="p">[</span><span class="s">&#39;email&#39;</span><span class="p">]),</span><span class="s">&#39;is on Profile&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&#39;Guest is on Profile ... and this should never happen&#39;</span><span class="p">)</span>
+        
+    <span class="n">usr</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">session</span><span class="p">[</span><span class="s">&#39;email&#39;</span><span class="p">])</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-17'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-17'>#</a>
+      </div>
+      <p>transactions by session user</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="n">transactions</span> <span class="o">=</span> <span class="n">db_session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">Transactions</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Transactions</span><span class="o">.</span><span class="n">email</span><span class="o">==</span><span class="n">usr</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-18'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-18'>#</a>
+      </div>
+      <p>accounts by session user</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="n">accounts</span> <span class="o">=</span> <span class="n">db_session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">Accounts</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Accounts</span><span class="o">.</span><span class="n">email</span><span class="o">==</span><span class="n">usr</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-19'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-19'>#</a>
+      </div>
+      <p>categories by session user</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="n">categories</span> <span class="o">=</span> <span class="n">db_session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">Categories</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Categories</span><span class="o">.</span><span class="n">email</span><span class="o">==</span><span class="n">usr</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+    <span class="n">cat_cnt</span> <span class="o">=</span> <span class="n">db_session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">Categories</span><span class="o">.</span><span class="n">id</span><span class="p">))</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Categories</span><span class="o">.</span><span class="n">email</span><span class="o">==</span><span class="n">usr</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-20'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-20'>#</a>
+      </div>
+      <p>progress by session user</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="n">con</span><span class="o">=</span><span class="n">engine</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+    <span class="n">progress</span> <span class="o">=</span> <span class="n">con</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&quot;select transactions.category, sum(transactions.amount) as sum, goals.goal, ((sum(transactions.amount)/goals.goal )*100) as progress from transactions, goals where transactions.category=goals.category and transactions.email=:param group by transactions.category&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s">&quot;param&quot;</span><span class="p">:</span><span class="n">session</span><span class="p">[</span><span class="s">&#39;email&#39;</span><span class="p">]}</span> <span class="p">)</span>
+        
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s">&#39;profile.html&#39;</span><span class="p">,</span> <span class="n">progress</span><span class="o">=</span><span class="n">progress</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-21'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-21'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="nd">@app.route</span><span class="p">(</span><span class="s">&#39;/signout&#39;</span><span class="p">)</span>
+<span class="nd">@login_required</span>
+<span class="k">def</span> <span class="nf">signout</span><span class="p">():</span>
+    <span class="k">if</span> <span class="s">&#39;email&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">session</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s">&#39;signin&#39;</span><span class="p">))</span>
+    <span class="n">flash</span><span class="p">(</span><span class="s">&#39;You have been logged out&#39;</span><span class="p">)</span>
+    <span class="k">print</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">session</span><span class="p">[</span><span class="s">&#39;email&#39;</span><span class="p">]),</span><span class="s">&#39;has been logged out.&#39;</span><span class="p">)</span>    
+    <span class="n">session</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&#39;email&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s">&#39;index&#39;</span><span class="p">))</span>
+    
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">run</span><span class="o">.</span><span class="n">app</span><span class="p">()</span>
+
+</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+</div>
+</body>
