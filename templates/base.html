@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
   <head>
     {% block head %}
@@ -13,27 +12,30 @@
     
     <link rel=stylesheet type=text/css href="{{ url_for('static', filename='css/bootstrap.css') }}">
     <style>
-      body { padding-top: 60px; } /*  to make the container go all the way to the bottom of the topbar */
-  
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+      }
     </style>
     <link rel=stylesheet type=text/css href="{{ url_for('static', filename='css/bootstrap-responsive.css') }}">
     <link rel=stylesheet type=text/css href="{{ url_for('static', filename='css/jquery-ui-1.10.3.custom.min.css') }}">
     <link rel=stylesheet type=text/css href="{{ url_for('static', filename='css/main.css') }}">
     <link rel=stylesheet type=text/css href="{{ url_for('static', filename='css/DT_bootstrap.css') }}">
 
+
     <script src="{{ url_for('static', filename='js/bootstrap.js') }}"></script>
     <script src="{{ url_for('static', filename='js/jquery-1.10.2.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/jquery-ui-1.10.3.custom.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/jquery.dataTables.js') }}"></script>
     <script src="{{ url_for('static', filename='js/DT_bootstrap.js') }}"></script>
-    <script src="/static/js/libs/modernizr-2.0.6.min.js"></script>
-    
 
     <script>
       $(function() {
         $( "#tabs" ).tabs();
       });
       
+      $(function() {
+        $( "#accordion" ).accordion();
+      });
       $(function() {
         $( "#datepicker" ).datepicker({ dateFormat: 'yy-mm-dd' });
       });
@@ -51,72 +53,74 @@
   </head>
 
   <body>
+
     {% block navbar %}
-    <div class="navbar navbar-inverse navbar-fixed-top"> 
-      <div class="navbar-inner">
-          <a class="brand" href="{{ url_for('index') }}">Budget Buddy</a>
+    <div class="navbar navbar-inverse navbar-fixed-top">  <!-- navbar-inverse for dark header -->
+        <div class="navbar-inner">
+            <div class="container">
+              
+              <a class="brand" href="{{ url_for('index') }}">Budget Buddy</a>
+              
                 {% block navbar_right %}
                 <ul class="nav pull-right">
-                {% if 'email' in session %}
-                <li><a href="{{ url_for('home') }}">{{ session['email'] }}'s Home</a></li>
-                <li><a href="{{ url_for('help') }}">Help</a></li>
-                <li><a href="{{ url_for('signout') }}">Sign Out</a></li>
-                {% else %}
-                <li><a href="{{ url_for('signup') }}">Sign up</a></li>
-                <li><a href="{{ url_for('signin') }}">Sign in</a></li>
-                {% endif %}
-                </ul>
-                {% endblock %}
-      </div>
-    </div> 
-    {% endblock %}
-
-    <div class="container page" align="right">
-            {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                {% for message in messages %}
-                <div class="flash-info">{{ message }}</div>
-                {% endfor %}
-            {% endif %}
-            {% endwith %}
-    </div> 
-         
-    <div class="container page">
-        <div class="content">
-        {% block content %} <!-- Main unit for a primary  message -->
-        <div class="hero-unit">
-        <h4>Budget Buddy</h4>
-        <p>Transform your savings, checking, and cash accounts with this budgeting lifesaver.  Avoid annual and unexpected budget busting pitfalls.  Divide your accounts into categories, set goals, and watch your balances grow.</p>
-        <p><a href="{{ url_for('help') }}" class="btn btn-small">Get Started  &raquo;</a></p>
-        </div>
-        {% endblock %}
-        </div> <!-- end content div-->
-    </div
-  </body>
-  
-  
-  <footer>
-  {% block footer %}
-    <div class="navbar navbar-inverse navbar-fixed-bottom">  <!-- navbar-inverse for dark header -->
-        <div class="navbar-inner">
-
-                {% block navbar_footer %}
-                <ul class="nav pull-right">
                     {% if 'email' in session %}
-
-                    <li><a href="mailto:DogIslandSoftware@gmail.com?Subject=Budget%20Buddy" target="_top">Contact Me</a></li>
-                    <li><a href="{{ url_for('index') }}">&copy; 2013 Dog Island Software</a></li>
-                    
+                    <li><a href="{{ url_for('home') }}">{{ session['email'] }} 's Home</a></li>
+                    <li><a href="{{ url_for('help') }}">Help</a></li>
+                    <li><a href="{{ url_for('signout') }}">Sign Out</a></li>
                   {% else %}
-                    <li><a href="mailto:info@dogislandsoftware.com?Subject=Budget%20Buddy" target="_top">Contact Me</a></li>
-                    <li><a href="{{ url_for('index') }}">&copy; 2013 Dog Island Software</a></li>
+                    <li><a href="{{ url_for('signup') }}">Sign up</a></li>
+                    <li><a href="{{ url_for('signin') }}">Sign in</a></li>
                   {% endif %}
                 </ul>
                 {% endblock %}
+            </div>
+          </div>
+    </div>
+    {% endblock %}
 
+        <div class="container page" align="right">
+                {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                    <div class="flash-info">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+                {% endwith %}
+        </div> 
+    <div class="container page">
+        <div class="content">
+          {% block content %}
 
-        </div> <!--/ end navbar -inner -->
-    </div><!--/.nav-collapse -->
+      <!-- Main hero unit for a primary marketing message or call to action -->
+      <div class="hero-unit">
+        <h3>Budget Buddy</h3>
+        <p>Transform your savings, checking, and cash accounts with this budgeting lifesaver.  Avoid annual and unexpected budget busting pitfalls.  Divide your accounts into categories, set goals, and watch your balances grow.</p>
+        <p><a href="{{ url_for('help') }}" class="btn btn-small">Get Started  &raquo;</a></p>
+      </div>
+      
+     {% endblock %}
+        </div>
+
+      
+</body>
+<footer>
+{% block footer %}
+     <div class="navbar navbar-inverse navbar-fixed-bottom">  <!-- navbar-inverse for dark header -->
+        <div class="navbar-inner">
+            <div class="container">
+                {% block navbar_footer %}
+                <ul class="nav pull-right">
+                    <li><a href="mailto:DogIslandSoftware@gmail.com?Subject=Budget%20Buddy" target="_top">Contact Me</a></li>
+                    <li><a href="{{ url_for('index') }}">&copy; 2013 Dog Island Software</a></li>
+                </ul>
+                {% endblock %}
+              </div><!--/.nav-collapse -->
+         </div>
+    </div>
+    {% endblock %}
+    </div>
+     {% block js_footer %}
+      <script src="http://twitter.github.com/bootstrap/assets/js/bootstrap.js"> </script>
     {% endblock %}
   </footer>
 </html>
