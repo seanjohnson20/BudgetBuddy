@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
   <head>
     {% block head %}
@@ -59,19 +58,13 @@
     <div class="navbar navbar-inverse navbar-fixed-top">  <!-- navbar-inverse for dark header -->
         <div class="navbar-inner">
             <div class="container">
-              <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-              </a>
+              
               <a class="brand" href="{{ url_for('index') }}">Budget Buddy</a>
-              <div class="nav-collapse">
-               <!-- <ul class="nav">
-                </ul> -->
+              
                 {% block navbar_right %}
                 <ul class="nav pull-right">
                     {% if 'email' in session %}
-                    <li><a href="{{ url_for('home') }}">Home</a></li>
+                    <li><a href="{{ url_for('home') }}">{{ session['email'] }} 's Home</a></li>
                     <li><a href="{{ url_for('help') }}">Help</a></li>
                     <li><a href="{{ url_for('signout') }}">Sign Out</a></li>
                   {% else %}
@@ -80,7 +73,6 @@
                   {% endif %}
                 </ul>
                 {% endblock %}
-              </div><!--/.nav-collapse -->
             </div>
           </div>
     </div>
@@ -90,7 +82,7 @@
                 {% with messages = get_flashed_messages() %}
                 {% if messages %}
                     {% for message in messages %}
-                    <div class="flash-info">{{ session['email'] }} {{ message }}</div>
+                    <div class="flash-info">{{ message }}</div>
                     {% endfor %}
                 {% endif %}
                 {% endwith %}
@@ -109,41 +101,26 @@
      {% endblock %}
         </div>
 
-        {% block footer %}
-        <div class="navbar navbar-inverse navbar-fixed-bottom">  <!-- navbar-inverse for dark header -->
+      
+</body>
+<footer>
+{% block footer %}
+     <div class="navbar navbar-inverse navbar-fixed-bottom">  <!-- navbar-inverse for dark header -->
         <div class="navbar-inner">
             <div class="container">
-              <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-              </a>
-              <div class="nav-collapse">
-               <!-- <ul class="nav">
-                </ul> -->
                 {% block navbar_footer %}
                 <ul class="nav pull-right">
-                    {% if 'email' in session %}
-                    
-                    <li><a href="{{ url_for('profile') }}">{{ session['email'] }}'s profile</a></li>
                     <li><a href="mailto:DogIslandSoftware@gmail.com?Subject=Budget%20Buddy" target="_top">Contact Me</a></li>
-                    <li><a href="{{ url_for('index') }}">&copy; 2013 Dog Island Software</a></li></div>
-                    
-                  {% else %}
-                    <li><a href="mailto:info@dogislandsoftware.com?Subject=Budget%20Buddy" target="_top">Contact Me</a></li>
-                    <li><a href="{{ url_for('index') }}">&copy; 2013 Dog Island Software</a></li></div>
-                  {% endif %}
+                    <li><a href="{{ url_for('index') }}">&copy; 2013 Dog Island Software</a></li>
                 </ul>
                 {% endblock %}
               </div><!--/.nav-collapse -->
-            </div>
-          </div>
+         </div>
     </div>
     {% endblock %}
-
     </div>
      {% block js_footer %}
       <script src="http://twitter.github.com/bootstrap/assets/js/bootstrap.js"> </script>
     {% endblock %}
-  </body>
+  </footer>
 </html>

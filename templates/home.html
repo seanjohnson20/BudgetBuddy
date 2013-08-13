@@ -16,18 +16,18 @@
         <thead>
             <tr >
                 <th width=15%> Goal<br>Category</th>
-                <th width=25%> Goal<br>Description</th>
+                <th width=20%> Goal<br>Description</th>
                 <th width=15%> Target<br>Date</th>
                 <th width=15%> Goal<br>Amount</th>
                 <th width=20%> $ to Save<br>/ Month</th>
-                <th width=15%> Delete </th>
+                <th width=20%> Manage </th>
             </tr>
         </thead>
         <tbody>
         {% for g in goals %}
             <tr>
                 <td width=15%> {{g.category }}</td>
-                <td width=25%> {{g.description }}</td>
+                <td width=20%> {{g.description }}</td>
                 <td width=15%> {{g.target }}</td>
                 <td width=15%> ${{ g.amount|int }}</td>
                 {% if g.days<0 %}
@@ -37,14 +37,14 @@
                 {% else %}
                 <td width=20%> ${{ '%0.2f'|format(g.monthly|float) }}</td>
                 {% endif %}
-                <td width=15%><a href="{{ url_for('delete_goal', id=g.id) }}">Delete</a></td>
+                <td><a class="btn btn-small" href="{{ url_for('delete_goal', id=g.id) }}">Delete</a></td>
             </tr>
         {% endfor %}
         </tbody>
 
     </table>
     </div>
-    <p><a href="{{ url_for('add_goal') }}#tabs-1" class="btn btn-small">Add Goals  &raquo;</a></p>
+    <p><a href="{{ url_for('add_goal') }}#tabs-1" class="btn btn-small">Add Goals</a></p>
 
     <BR>
     
@@ -78,7 +78,7 @@
                 <th> Date</th>
                 <th> Notes</th>
                 <th> Amount</th>
-                <th> Delete </th>
+                <th width='20%'> Manage </th>
             </tr>
         </thead>
         <tbody>
@@ -90,14 +90,14 @@
                 <td> {{t.trans_date }}</td>
                 <td> {{t.notes }}</td>
                 <td> ${{ '%0.2f'|format(t.amount|float) }}</td>
-                <td width="75px"><a href="{{ url_for('delete_trans', id=t.id) }}">Delete</a></td>
+                <td><a class="btn btn-small" href="{{ url_for('delete_trans', id=t.id) }}">Delete</a></td>
             </tr>
         {% endfor %}
         </tbody>
         <tfoot>
     </table>
     </div> <!--end table container-->
-    <p><a href="{{ url_for('add_trans') }}#tabs-2" class="btn btn-small">Add Transactions  &raquo;</a></p>
+    <p><a href="{{ url_for('add_trans') }}#tabs-2" class="btn btn-small">Add Transactions</a></p>
     
   </div> <!-- end tabs-2-->
   
@@ -107,24 +107,24 @@
     <table cellpadding="0" cellspacing="0" border="0" width=95% class="table table-striped table-bordered">
         <thead>
             <tr>
-                <th width=20%> Category Name </th>
-                <th width=20%> Category Balance </th>
-                <th width=20%> Delete </th>
+                <th> Category Name </th>
+                <th> Category Balance </th>
+                <th> Manage </th>
             </tr>
         </thead>
         <tbody>
         {% for c in categories %}
             <tr>
-                <td width=20%> {{c.name }}</td>
-                <td width=20%> ${{ '%0.2f'|format(c.sum|float) }} </td>
-                <td width=20%><a href="{{ url_for('delete_cat', id=c.id) }}">Delete</a></td>
+                <td> {{c.name }}</td>
+                <td> ${{ '%0.2f'|format(c.sum|float) }} </td>
+                <td><a class="btn btn-small" href="{{ url_for('delete_cat', id=c.id) }}">Delete</a></td>
             </tr>
         {% endfor %}
         </tbody>
         <tfoot>
     </table>
     </div>
-    <p><a href="{{ url_for('add_cat') }}#tabs-4" class="btn btn-small">Add Categories  &raquo;</a></p>
+    <p><a href="{{ url_for('add_cat') }}#tabs-4" class="btn btn-small">Add Categories</a></p>
     </div> <!-- end tabs-3-->
     
     
@@ -144,14 +144,14 @@
             <tr>
                 <td width=20%> {{ a.name }}</td>
                 <td width=20%> ${{ '%0.2f'|format(a.sum|float) }}</td>
-                <td width=20%><a href="{{ url_for('delete_acct', id=a.id) }}">Delete</a><br><a href="{{ url_for('edit_acct', id=a.id) }}">Edit</a></td>
+                <td width=20%><a class="btn btn-small" href="{{ url_for('edit_acct', id=a.id) }}">Edit</a>  <a class="btn btn-small" href="{{ url_for('delete_acct', id=a.id) }}">Delete</a><br></td>
             </tr>
         {% endfor %}
         </tbody>
         <tfoot>
     </table>
     </div>
-    <p><a href="{{ url_for('add_acct') }}#tabs-3" class="btn btn-small">Add Accounts  &raquo;</a></p>
+    <p><a href="{{ url_for('add_acct') }}#tabs-3" class="btn btn-small">Add Accounts</a></p>
     
   </div> <!-- end tabs-4-->
     

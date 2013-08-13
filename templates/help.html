@@ -1,104 +1,106 @@
 {% extends "base.html" %}
 
 {% block content %} 
-    
-    <div id="accordion">
-  <h3>Step 1 - Create a Username</h3>
-  <div>
-    <p>To begin click <strong><a class='button'  href="/signup">Sign Up</a></strong> and fill out the form.  All fields are required and you must accept the terms of use.  Click the <strong>Sign Up</strong> button and you will be returned to the home page.
-    <br><img src="{{ url_for('static', filename='img/signup.jpg') }}">
-    </p>  
-  </div>
-  <h3>Step 2 - Add one or more Accounts</h3>
-  <div>
-    
-    <p>Now that you've created a user. You'll need to create at least one Account.  I prefer to have this account reconcile to an actual bank account or envelope of money.  BudgetBuddy will help you organize how the money in that account is being saved and used.  You can create a BudgetBuddy account for every bank account or cash store for which you'd like to track savings.  Click the Accounts tab and the <strong>Add Accounts</strong> button.</>
-    
-    
-    <br><img src="{{ url_for('static', filename='img/addacct1.jpg') }}">
-    
-    
-    <p>Fill out the form and click the <strong>Add Account</strong> button.</p<
-    
-    
-    <br><img src="{{ url_for('static', filename='img/addacct2.jpg') }}">
-    </p>
-  </div>
-  <h3>Step 3 - Add one or more Categories</h3>
-  <div>
-    <p>
-    Next you'll need to create some budget categories.  These categories are big items that are planned or unplanned expenses that mess up your budget or create debt.  Examples include Christmas, car registration or repairs, vacation, or emergency fund.</p>
-    
-    
-    <p>From the <i>Home</i> page click the Categories tab and the <strong>Add Categories</strong> button</p>
-    
-     
-    <br><img src="{{ url_for('static', filename='img/addcat1.jpg') }}">
-    
-    
-    <p>Fill out the form and click the <strong>Add Category</strong> button.</P
-    
-    
-    <br><img src="{{ url_for('static', filename='img/addcat2.jpg') }}">
-    </p>
-  </div>
-  <h3>Step 4 - Add one or more Goals</h3>
-  <div>
-    <p>
-    This step is optional, but I think you'll find it helpful to motivate you and show you your progress.  
-    
-    
-    From the <i>Home</i> page click the Goals tab and the <strong>Add Goals</strong> button
-    
-     
-    <br><img src="{{ url_for('static', filename='img/addgoal1.jpg') }}">
-    
-    
-    Select which category relates to this goal.  Describe your goal.  Enter the target Date and Goal Amount and click the <strong>Add Goal</strong> button.
-    
-    
-    <br><img src="{{ url_for('static', filename='img/addgoal2.jpg') }}">
-    
-    Your goal will now appear with details you entered plus how much you'll need to save per month to meet this goal. Below you'll see a progress bar that shows how far you've come and how many days you have left.  The bar will change color as you approach your target date and when you meet your goal.
-    
-     
-    <br><img src="{{ url_for('static', filename='img/addgoal3.jpg') }}">
-    </p>
-  </div>
-  <h3>Step 5 - Enter Transactions to track savings</h3>
-  <div>
-    <p>
-    Finally, everytime you add or subtract money from your bank account you should make a like entry here to determine how your savings are being divied up.
-    
-    
-    From the <i>Home</i> page click the Transactions tab and the <strong>Add Transactions</strong> button
-    
-     
-    <br><img src="{{ url_for('static', filename='img/addtrans1.jpg') }}">
-    
-    
-    <p>Select from your Accounts and Categories (raquired) and optionally select a Goal.  Add notes and Amount and and click the <strong>Submit Transaction</strong> button.</p>
-    
-    
-    <br><img src="{{ url_for('static', filename='img/addtrans2.jpg') }}">
+<div id="tabs">
+  <ul>
+    <li><a href="#tab-username">Create Username</a></li>
+    <li><a href="#tab-accounts">Add Accounts</a></li>
+    <li><a href="#tab-category">Add Categories</a></li>
+    <li><a href="#tab-goals">Add Goals</a></li>
+    <li><a href="#tab-transactions">Add Transactions</a></li>
+  </ul>
+    <div id="tab-username">
+        <div>
+        <p>To begin click <strong><a class='button'  href="/signup">Sign Up</a></strong> and fill out the form.</p>  
+        <p>All fields are required and you must accept the terms of use.</p>  
+        <p>Click the <strong>Sign Up</strong> button and you will be returned to the home page.</P>
+        <br><img src="{{ url_for('static', filename='img/signup.jpg') }}">
+        </p>  
+        </div>
+    </div> <!-- end tab -->
     
     
     
-    <p>With each transaction, if you've included a goal, you'll see progress toward your goal.</p>
-    
-    
-    <br><img src="{{ url_for('static', filename='img/prog1.jpg') }}">
-    
-    
-    <p>As more transactions are added and time moves forward you'll have a good picture of how your savings are growing.</p>
-    
-    
-    <br><img src="{{ url_for('static', filename='img/prog2.jpg') }}">
-    </p>
-    
-  </div>
-</div>
+    <div id="tab-accounts">
+        <div>
 
+        <p>Now that you've created a user. You'll need to create at least one Account.  I prefer to have this account reconcile to an actual bank account or envelope of money.  BudgetBuddy will help you organize how the money in that account is being saved and used.  You can create a BudgetBuddy account for every bank account or cash store for which you'd like to track savings.  Click the Accounts tab and the <strong>Add Accounts</strong> button.</p>
+
+        <p>
+        <img src="{{ url_for('static', filename='img/addacct1.jpg') }}"></p>
+
+        <p>Fill out the form and click the <strong>Add Account</strong> button.</p>
+
+        <p><img src="{{ url_for('static', filename='img/addacct2.jpg') }}"></p>
+        </div>
+    </div> <!-- end tab -->
+    
+    
+
+    <div id="tab-category">
+        <div>
+        <p>
+        Next you'll need to create some budget categories.  These categories are big items that are planned or unplanned expenses that mess up your budget or create debt.  Examples include Christmas, car registration or repairs, vacation, or emergency fund.</p>
+
+        <p>From the <i>Home</i> page click the Categories tab and the <strong>Add Categories</strong> button</p>
+
+        <p><img src="{{ url_for('static', filename='img/addcat1.jpg') }}"></p>
+
+        <p>Fill out the form and click the <strong>Add Category</strong> button.</P>
+
+        <p><img src="{{ url_for('static', filename='img/addcat2.jpg') }}"></p>
+
+        </div>
+    
+    </div> <!-- end tab -->
+    
+    
+    <div id="tab-goals">
+        <div>
+        <p>
+        This step is optional, but I think you'll find it helpful to motivate you and show you your progress.  
+
+        From the <i>Home</i> page click the Goals tab and the <strong>Add Goals</strong> button
+
+        <p><img src="{{ url_for('static', filename='img/addgoal1.jpg') }}">
+
+        <p>Select which category relates to this goal.  Describe your goal.  Enter the target Date and Goal Amount and click the <strong>Add Goal</strong> button.</p>
+
+        <p><img src="{{ url_for('static', filename='img/addgoal2.jpg') }}"></p>
+
+        <p>Your goal will now appear with details you entered plus how much you'll need to save per month to meet this goal. Below you'll see a progress bar that shows how far you've come and how many days you have left.  The bar will change color as you approach your target date and when you meet your goal.</p>
+
+        <p><img src="{{ url_for('static', filename='img/addgoal3.jpg') }}"></p>
+        </div>
+    </div> <!-- end tab -->
+    
+    
+    <div id="tab-transactions">
+        <div>
+        <p>
+        Finally, everytime you add or subtract money from your bank account you should make a like entry here to determine how your savings are being divied up.
+
+        From the <i>Home</i> page click the Transactions tab and the <strong>Add Transactions</strong> button
+
+        <br><img src="{{ url_for('static', filename='img/addtrans1.jpg') }}">
+
+        <p>Select from your Accounts and Categories (raquired) and optionally select a Goal.  Add notes and Amount and and click the <strong>Submit Transaction</strong> button.</p>
+
+        <br><img src="{{ url_for('static', filename='img/addtrans2.jpg') }}">
+
+        <p>With each transaction, if you've included a goal, you'll see progress toward your goal.</p>
+
+        <br><img src="{{ url_for('static', filename='img/prog1.jpg') }}">
+
+        <p>As more transactions are added and time moves forward you'll have a good picture of how your savings are growing.</p>
+
+        <br><img src="{{ url_for('static', filename='img/prog2.jpg') }}">
+        </p>
+        </div>
+    
+    </div> <!-- end tab -->
+  
+</div>
 
 {% endblock %}
 

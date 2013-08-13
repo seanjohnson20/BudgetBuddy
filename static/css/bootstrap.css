@@ -1,11 +1,11 @@
 /*!
  * Bootstrap v2.3.2
  *
- * Copyright 2012 Twitter, Inc
+ * Copyright 2013 Twitter, Inc
  * Licensed under the Apache License v2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Designed and built with all the love in the world @twitter by @mdo and @fat.
+ * Designed and built with all the love in the world by @mdo and @fat.
  */
 
 .clearfix {
@@ -226,8 +226,8 @@ body {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 14px;
   line-height: 20px;
-  color: #333333; /* orig color #333333;*/
-  background-color: #FFFFCC;  /*Mint Green #CCFFCC;  Original was White #ffffff;*/
+  color: #333333;
+  background-color: #ffffff;
 }
 
 a {
@@ -2002,7 +2002,7 @@ table {
 }
 
 .table {
-  width: 100%;
+  width: 85%;
   margin-bottom: 20px;
 }
 
@@ -4569,7 +4569,7 @@ input[type="submit"].btn.btn-mini {
 .navbar-static-top .container,
 .navbar-fixed-top .container,
 .navbar-fixed-bottom .container {
-  width: 95%;
+  width: 940px;
 }
 
 .navbar-fixed-top {
@@ -6123,8 +6123,8 @@ a.badge:focus {
   font-size: 18px;
   font-weight: 200;
   line-height: 30px;
-  /*color: inherit;*/
-  background-color: #FFFFCC  /* #eeeeee;  */
+  color: inherit;
+  background-color: #eeeeee;
   -webkit-border-radius: 6px;
      -moz-border-radius: 6px;
           border-radius: 6px;
