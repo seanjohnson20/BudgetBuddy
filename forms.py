@@ -50,7 +50,7 @@ class SigninForm(Form):
       return False
       
 
-class TransactionForm(Form):  #form2
+class TransactionForm(Form):  
     account = SelectField('Select Account',[validators.Required("Please select Account.")])
     category = SelectField('Select Category',[validators.Required("Please select Category.")])
     goal = SelectField('Optional: Apply Savings to Goal',[validators.Optional("Apply Savings to Goal.")])
@@ -65,20 +65,33 @@ class TransactionForm(Form):  #form2
         if not Form.validate(self):
             return False
     
-    
 class AccountForm(Form):  #form3
     name = TextField("Account",  [validators.Required("Please select Account")])
-    submit = SubmitField("Add/Update Account")
+    submit = SubmitField("Add Account")
     
     def __init__(self, *args, **kwargs):
         Form.__init__(self, *args, **kwargs)
 
     def validate(self):
         if not Form.validate(self):
-            return False
+            return False    
+
+    
+class EditAcctForm(Form): 
+    id = IntegerField("ID",)
+    name = TextField("Account", )
+    email = TextField("Email", )
+    submit = SubmitField("Update Account")
+    
+    def __init__(self, *args, **kwargs):
+        Form.__init__(self, *args, **kwargs)
+
+    def validate(self):
+        if not Form.validate(self):
+            return False        
             
             
-class CategoryForm(Form): #form4
+class CategoryForm(Form): 
     name = TextField("Category",  [validators.Required("Please select Category")])
     submit = SubmitField("Add/Update Category")
     
@@ -90,7 +103,7 @@ class CategoryForm(Form): #form4
             return False       
  
 
-class GoalForm(Form):  #form1
+class GoalForm(Form):  
     category = SelectField('Select Category',[validators.Required("Please select Account.")])
     target = TextField("Target Date", [validators.optional("Enter Target Date")],id="datepicker")
     description = TextAreaField("Goal Description",  [validators.optional("Enter Amount")])

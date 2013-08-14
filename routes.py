@@ -7,7 +7,7 @@ from models import User, Accounts, Categories, Transactions, Goals
 from flask import Flask
 from flask.ext.mail import Message
 from config import *
-from forms import SignupForm, SigninForm, TransactionForm, AccountForm, CategoryForm, GoalForm
+from forms import SignupForm, SigninForm, TransactionForm, AccountForm, CategoryForm, GoalForm, EditAcctForm
 from functools import wraps
 from sqlalchemy import func
 from datetime import date, datetime
@@ -220,11 +220,27 @@ def add_acct():
 def edit_acct(id):
     print 'Edit_Acct says ID = ', id
     print (str(session['email']),'is on edit_acct')
-    acct=Accounts.query.get(id)
-    form = AccountForm(obj=acct)
-    return render_template('addacct.html', id=id, form=form) 
+    acct = Accounts.query.get(id)
+    form = EditAcctForm(obj=acct)
+    return render_template('editacct.html', id=id, form=form) 
 
-        
+    
+@app.route("/mod_acct/", methods=['GET', 'POST'])
+@login_required
+def mod_acct():
+    print (str(session['email']),'is on mod_acct')
+    form = EditAcctForm()
+    if request.method == 'POST':
+        db_session.query(Accounts).filter_by(id = form.id.data).\
+    update({"name":form.name.data}, synchronize_session=False)
+        db_session.commit()
+        flash('You modified an account.')
+        print (str(session['email']),'has successfully modified an account')
+        return redirect(url_for('home'))
+    flash('You did nothing. Again.')
+    return render_template('editacct.html', form=form) 
+  
+  
 @app.route("/add_cat/", methods=['GET', 'POST'])
 @login_required
 def add_cat():

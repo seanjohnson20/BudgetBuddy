@@ -7,15 +7,21 @@
     <li><a href="#tabs-1">Edit Account</a></li>
   </ul>
 <div id="tabs-1">
-  <form action="{{ url_for('/edit_acct/')}}" method='POST'>
+  <form action="{{ url_for('mod_acct') }}" method=post>
     {{ form.hidden_tag() }}
 
+    {{ form.id.label }}
+    {{ form.id(readonly=true) }}
+    
     {{ form.name.label }}
     {{ form.name }}
     {% for message in form.name.errors %}
     <div class="flash">{{ message }}</div>
     {% endfor %}
 
+    {{ form.email.label }}
+    {{ form.email(readonly=true) }}
+    
     {{ form.submit }}
   </form>
 </div> <!-- end tabs-1-->
