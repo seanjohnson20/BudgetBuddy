@@ -7,7 +7,7 @@ from models import User, Accounts, Categories, Transactions, Goals
 from flask import Flask
 from flask.ext.mail import Message
 from config import *
-from forms import SignupForm, SigninForm, TransactionForm, AccountForm, CategoryForm, GoalForm, EditAcctForm
+from forms import SignupForm, SigninForm, TransactionForm, AccountForm, CategoryForm, GoalForm, EditAcctForm, EditCatForm
 from functools import wraps
 from sqlalchemy import func
 from datetime import date, datetime
@@ -237,7 +237,6 @@ def mod_acct():
         flash('You modified an account.')
         print (str(session['email']),'has successfully modified an account')
         return redirect(url_for('home'))
-    flash('You did nothing. Again.')
     return render_template('editacct.html', form=form) 
   
   
@@ -259,6 +258,32 @@ def add_cat():
     elif request.method == 'GET':
         print (str(session['email']),'is still on add_cat')
         return render_template('addcat.html', form=form)          
+
+
+
+@app.route('/edit_cat/<int:id>/')
+@login_required
+def edit_cat(id):
+    print 'Edit_Cat says ID = ', id
+    print (str(session['email']),'is on edit_cat')
+    cat = Categories.query.get(id)
+    form = EditCatForm(obj=cat)
+    return render_template('editcat.html', id=id, form=form) 
+
+    
+@app.route("/mod_cat/", methods=['GET', 'POST'])
+@login_required
+def mod_cat():
+    print (str(session['email']),'is on mod_acct')
+    form = EditAcctForm()
+    if request.method == 'POST':
+        db_session.query(Categories).filter_by(id = form.id.data).\
+    update({"name":form.name.data}, synchronize_session=False)
+        db_session.commit()
+        flash('You modified a category.')
+        print (str(session['email']),'has successfully modified a category')
+        return redirect(url_for('home'))
+    return render_template('editcat.html', form=form) 
 
         
 # Delete transactions:

@@ -93,7 +93,7 @@ class EditAcctForm(Form):
             
 class CategoryForm(Form): 
     name = TextField("Category",  [validators.Required("Please select Category")])
-    submit = SubmitField("Add/Update Category")
+    submit = SubmitField("Add Category")
     
     def __init__(self, *args, **kwargs):
         Form.__init__(self, *args, **kwargs)
@@ -101,7 +101,20 @@ class CategoryForm(Form):
     def validate(self):
         if not Form.validate(self):
             return False       
- 
+
+class EditCatForm(Form): 
+    id = IntegerField("ID",)
+    name = TextField("Category", )
+    email = TextField("Email", )
+    submit = SubmitField("Update Category")
+    
+    def __init__(self, *args, **kwargs):
+        Form.__init__(self, *args, **kwargs)
+
+    def validate(self):
+        if not Form.validate(self):
+            return False   
+            
 
 class GoalForm(Form):  
     category = SelectField('Select Category',[validators.Required("Please select Account.")])
