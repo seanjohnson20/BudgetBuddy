@@ -121,7 +121,7 @@ class GoalForm(Form):
     target = TextField("Target Date", [validators.optional("Enter Target Date")],id="datepicker")
     description = TextAreaField("Goal Description",  [validators.optional("Enter Amount")])
     amount = DecimalField("Goal Amount", [validators.Required("Enter Amount")])
-    submit = SubmitField("Add/Update Goal")
+    submit = SubmitField("Add Goal")
     
     def __init__(self, *args, **kwargs):
         Form.__init__(self, *args, **kwargs)
@@ -131,7 +131,21 @@ class GoalForm(Form):
             return False
             
             
-            
+class EditGoalForm(Form):  
+    id = IntegerField("ID",)
+    email = TextField("Email", )
+    category = SelectField('Select Category',[validators.Required("Please select Account.")])
+    target = TextField("Target Date",id="datepicker")
+    description = TextAreaField("Goal Description",  [validators.optional("Enter Amount")])
+    amount = DecimalField("Goal Amount", [validators.Required("Enter Amount")])
+    submit = SubmitField("Update Goal")
+    
+    def __init__(self, *args, **kwargs):
+        Form.__init__(self, *args, **kwargs)
+
+    def validate(self):
+        if not Form.validate(self):
+            return False            
             
             
 

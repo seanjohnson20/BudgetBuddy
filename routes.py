@@ -7,7 +7,7 @@ from models import User, Accounts, Categories, Transactions, Goals
 from flask import Flask
 from flask.ext.mail import Message
 from config import *
-from forms import SignupForm, SigninForm, TransactionForm, AccountForm, CategoryForm, GoalForm, EditAcctForm, EditCatForm
+from forms import SignupForm, SigninForm, TransactionForm, AccountForm, CategoryForm, GoalForm, EditAcctForm, EditCatForm, EditGoalForm
 from functools import wraps
 from sqlalchemy import func
 from datetime import date, datetime
@@ -169,7 +169,44 @@ def add_goal():
     print ("submit failed: ",session['email'], form.category.data, form.target.data, form.description.data, form.amount.data)
     return render_template('addgoal.html', form=form) 
     
+"""
+    For each of the following (Acct, Cat, Goal, Trans) I have an Add Route which is self-explanatory,
+    an Edit Route, which I using expressly to pass an obj ID into a form, and a Mod Route, 
+    which receives the populated form and updates the database on submit.
+    
+    This seems kludgy to me, but it's the only way I could find to pass the ID and object appropriately.
 
+""" 
+    
+    
+@app.route('/edit_goal/<int:id>/')
+@login_required
+def edit_goal(id):
+    email = session['email']
+    print 'Edit_goal says ID = ', id
+    print (str(session['email']),'is on edit_goal')
+    goal = Goals.query.get(id)
+    form = EditGoalForm(obj=goal)
+    form.category.choices = [(c.name,c.name) for c in Categories.query.filter_by(email=email)]
+    return render_template('editgoal.html', form=form) 
+
+    
+@app.route("/mod_goal/", methods=['GET', 'POST'])
+@login_required
+def mod_goal():
+    email = session['email']
+    print (str(session['email']),'is on mod_goal')
+    form = EditGoalForm()
+    if request.method == 'POST':
+        db_session.query(Goals).filter_by(id = form.id.data).\
+    update({"category":form.category.data, "target":form.target.data, "description":form.description.data, "amount":form.amount.data}, synchronize_session=False)
+        db_session.commit()
+        flash('You modified a goal.')
+        print (str(session['email']),'has successfully modified a goal')
+        return redirect(url_for('home'))
+    return render_template('editgoal.html', form=form)
+    
+    
 @app.route("/add_trans/", methods=['GET', 'POST'])
 @login_required
 def add_trans():
@@ -222,7 +259,7 @@ def edit_acct(id):
     print (str(session['email']),'is on edit_acct')
     acct = Accounts.query.get(id)
     form = EditAcctForm(obj=acct)
-    return render_template('editacct.html', id=id, form=form) 
+    return render_template('editacct.html', form=form) 
 
     
 @app.route("/mod_acct/", methods=['GET', 'POST'])
@@ -268,7 +305,7 @@ def edit_cat(id):
     print (str(session['email']),'is on edit_cat')
     cat = Categories.query.get(id)
     form = EditCatForm(obj=cat)
-    return render_template('editcat.html', id=id, form=form) 
+    return render_template('editcat.html', form=form) 
 
     
 @app.route("/mod_cat/", methods=['GET', 'POST'])
