@@ -7,7 +7,6 @@ def populate():
   
     db_session.add_all([
         User('demo','demo','demo@mail.com','pass'),
-        User('sean','johnson','seanjohnson20@gmail.com','pass'),
         
         Accounts('Savings','demo@mail.com'),
         Accounts('Checking','demo@mail.com'),
