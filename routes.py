@@ -7,7 +7,7 @@ from models import User, Accounts, Categories, Transactions, Goals
 from flask import Flask
 from flask.ext.mail import Message
 from config import *
-from forms import SignupForm, SigninForm, TransactionForm, AccountForm, CategoryForm, GoalForm, EditAcctForm, EditCatForm, EditGoalForm
+from forms import SignupForm, SigninForm, TransactionForm, AccountForm, CategoryForm, GoalForm, EditAcctForm, EditCatForm, EditGoalForm, EditTransForm
 from functools import wraps
 from sqlalchemy import func
 from datetime import date, datetime
@@ -230,6 +230,36 @@ def add_trans():
             return redirect('/home')
     print ("submit failed: ",session['email'], form.account.data, form.category.data, today, form.notes.data, form.amount.data)
     return render_template('addtrans.html', form=form)
+
+
+@app.route('/edit_trans/<int:id>/')
+@login_required
+def edit_trans(id):
+    email = session['email']
+    print 'Edit_Trans says ID = ', id
+    print (str(session['email']),'is on edit_trans')
+    acct = Transactions.query.get(id)
+    form = EditTransForm(obj=acct)
+    form.account.choices = [(a.name,a.name) for a in Accounts.query.filter_by(email=email).order_by(Accounts.name)]
+    form.category.choices = [(c.name,c.name) for c in Categories.query.filter_by(email=email).order_by(Categories.name)]
+    form.goal.choices = [(g.description,g.description) for g in Goals.query.filter_by(email=email).order_by(Goals.description)]
+    return render_template('edittrans.html', form=form) 
+
+    
+@app.route("/mod_trans/", methods=['GET', 'POST'])
+@login_required
+def mod_trans():
+    email = session['email']
+    print (str(session['email']),'is on mod_trans')
+    form = EditTransForm()
+    if request.method == 'POST':
+        db_session.query(Transactions).filter_by(id = form.id.data).\
+    update({"account":form.account.data, "category":form.category.data, "goal":form.goal.data, "notes":form.notes.data, "amount":form.amount.data}, synchronize_session=False)
+        db_session.commit()
+        flash('You modified a transaction.')
+        print (str(session['email']),'has successfully modified a transaction')
+        return redirect(url_for('home'))
+    return render_template('edittrans.html', form=form)
     
 
 @app.route("/add_acct/", methods=['GET', 'POST'])

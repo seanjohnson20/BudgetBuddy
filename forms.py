@@ -56,7 +56,7 @@ class TransactionForm(Form):
     goal = SelectField('Optional: Apply Savings to Goal',[validators.Optional("Apply Savings to Goal.")])
     notes = TextField("Notes",  [validators.optional("Optional: add notes")])
     amount = DecimalField("Amount",  [validators.Required("Please enter Amount.")])
-    submit = SubmitField("Submit/Update Transaction")
+    submit = SubmitField("Add Transaction")
     
     def __init__(self, *args, **kwargs):
         Form.__init__(self, *args, **kwargs)
@@ -64,6 +64,25 @@ class TransactionForm(Form):
     def validate(self):
         if not Form.validate(self):
             return False
+            
+
+class EditTransForm(Form):
+    id = IntegerField("ID",)  
+    account = SelectField('Select Account',[validators.Required("Please select Account.")])
+    category = SelectField('Select Category',[validators.Required("Please select Category.")])
+    goal = SelectField('Optional: Apply Savings to Goal',[validators.Optional("Apply Savings to Goal.")])
+    notes = TextField("Notes",  [validators.optional("Optional: add notes")])
+    amount = DecimalField("Amount",  [validators.Required("Please enter Amount.")])
+    email = TextField("Email", )
+    submit = SubmitField("Update Transaction")
+    
+    def __init__(self, *args, **kwargs):
+        Form.__init__(self, *args, **kwargs)
+
+    def validate(self):
+        if not Form.validate(self):
+            return False
+
     
 class AccountForm(Form):  #form3
     name = TextField("Account",  [validators.Required("Please select Account")])
