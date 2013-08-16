@@ -9,18 +9,18 @@
     {{ form.hidden_tag() }}
 
     {{ form.email.label }}
-    {{ form.email }}
+    {{ form.email(placeholder="demo@mail.com") }}
     {% for message in form.email.errors %}
     <div class="flash">{{ message }}</div>
     {% endfor %}
-    <br><i>example: demo@mail.com </i>
+
 
     {{ form.password.label }}
-    {{ form.password }}
+    {{ form.password(placeholder="pass") }}
     {% for message in form.password.errors %}
     <div class="flash">{{ message }}</div>
     {% endfor %}
-    <br><i>example: pass </i>
+
         
     <br>
     {{ form.submit }}
