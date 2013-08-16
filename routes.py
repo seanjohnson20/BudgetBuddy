@@ -430,5 +430,24 @@ def signout():
     session.pop('email', None)
     return redirect(url_for('index'))
     
-if __name__ == "__main__":
-    run.app()
+## Error Handlers ##
+
+@app.errorhandler(500)
+def internal_error(error):
+    #db_session.rollback()
+    return render_template('500.html'), 500
+
+@app.errorhandler(404)
+def internal_error(error):
+    return render_template('404.html'), 404
+
+if not app.debug:
+    file_handler = FileHandler('error.log')
+    file_handler.setFormatter(Formatter('%(asctime)s %(levelname)s: %(message)s '
+    '[in %(pathname)s:%(lineno)d]'))
+    app.logger.setLevel(logging.INFO)
+    file_handler.setLevel(logging.INFO)
+    app.logger.addHandler(file_handler)
+    app.logger.info('errors')
+    
+
