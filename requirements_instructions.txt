@@ -1,0 +1,27 @@
+in your base directory for your project use the command
+
+	$ pip freeze > requirements.txt  
+
+This will evaluate all of the dependencies you installed via pip and create a requirements.txt file for you that includes information like :
+
+	Flask==0.10.1
+	Flask-Mail==0.9.0
+	Flask-SQLAlchemy==1.0
+	Flask-WTF==0.8.4
+	Jinja2==2.7.1
+	Markdown==2.3.1
+	MarkupSafe==0.18
+	Pycco==0.3.0
+	Pygments==1.6
+	SQLAlchemy==0.8.2
+	WTForms==1.0.4
+	Werkzeug==0.9.3
+	blinker==1.3
+	itsdangerous==0.23
+	pystache==0.5.3
+	smartypants==1.6.0.3
+	waitress==0.8.5
+
+Then anyone who wants to clone your project and install the required dependencies can use 
+
+	$ pip install -r requirements.txt

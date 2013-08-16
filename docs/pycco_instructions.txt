@@ -1,0 +1,3 @@
+To run pycco and document all of your code run
+
+$ pycco ./*.py
