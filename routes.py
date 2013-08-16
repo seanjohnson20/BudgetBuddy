@@ -1,5 +1,5 @@
 # coding: utf-8
-# u.t.f.-8  line included so Jinja templates can handle '%.02f' in them.
+## u.t.f.-8  line included so Jinja templates can handle '%.02f' in them.
 from flask import Flask, render_template, request, g, session, flash, \
      redirect, url_for, abort
 from database import db_session, engine
@@ -66,10 +66,8 @@ def index():
         print (str(session['email']),'is on Index')
     else:
         print('Guest is on Index')
-        
-    usrs = User.query.order_by(User.email)
-    #usrs = db_session.query(User).order_by(User.firstname)
-    return render_template('index.html', usrs=usrs)
+
+    return render_template('index.html')
     
     
 @app.route("/eula/")
