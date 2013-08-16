@@ -69,7 +69,7 @@ def index():
 
     return render_template('index.html')
     
-    
+# End User - Terms of Use -- need to update this page
 @app.route("/eula/")
 def eula():
     if 'email' in session:
