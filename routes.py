@@ -69,14 +69,14 @@ def index():
 
     return render_template('index.html')
     
-# End User - Terms of Use -- need to update this page
-@app.route("/eula/")
-def eula():
+# End User - Terms of Use 
+@app.route("/terms/")
+def terms():
     if 'email' in session:
-        print (str(session['email']),'is on EULA')
+        print (str(session['email']),'is on Terms.html')
     else:
-        print('Guest is on EULA')
-    return render_template('eula.html')
+        print('Guest is on Terms.html')
+    return render_template('terms.html')
    
    
 @app.route("/about/")

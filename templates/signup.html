@@ -43,7 +43,7 @@
     <div class="flash">{{ message }}</div>
     {% endfor %}
     <br/>
-    I accept the <a href="{{ url_for('eula') }}">terms</a> of use  {{ form.accept_eula }}  
+    I accept the <a href="{{ url_for('terms') }}">terms</a> of use  {{ form.accept_eula }}  
     {% for message in form.accept_eula.errors %}
     <div class="flash">{{ message }}</div>
     {% endfor %}
