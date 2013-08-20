@@ -163,7 +163,7 @@ def add_goal():
             db_session.commit()
             flash('You created a new goal.')
             print (str(session['email']),'has successfully added a new goal')
-            return redirect('/home')
+            return redirect('/home/')
     print ("submit failed: ",session['email'], form.category.data, form.target.data, form.description.data, form.amount.data)
     return render_template('addgoal.html', form=form) 
     
@@ -225,7 +225,7 @@ def add_trans():
             db_session.commit()
             flash('You created a new transaction.')
             print (str(session['email']),'has successfully added a new transaction')
-            return redirect('/home')
+            return redirect('/home/',)
     print ("submit failed: ",session['email'], form.account.data, form.category.data, today, form.notes.data, form.amount.data)
     return render_template('addtrans.html', form=form)
 
@@ -274,7 +274,7 @@ def add_acct():
             db_session.commit()
             flash('You created a new account.')
             print (str(session['email']),'has successfully added a new account')
-            return redirect(url_for('home'))
+            return redirect(url_for('home/'))
     elif request.method == 'GET':
         print (str(session['email']),'is still on add_acct')
         return render_template('addacct.html', form=form)  

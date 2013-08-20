@@ -51,12 +51,12 @@ class SigninForm(Form):
       
 
 class TransactionForm(Form):  
-    account = SelectField('Select Account',[validators.Required("Please select Account.")])
-    category = SelectField('Select Category',[validators.Required("Please select Category.")])
-    goal = SelectField('Optional: Apply Savings to Goal',[validators.Optional("Apply Savings to Goal.")])
-    notes = TextField("Notes",  [validators.optional("Optional: add notes")])
-    amount = DecimalField("Amount",  [validators.Required("Please enter Amount.")])
-    submit = SubmitField("Add Transaction")
+    account = SelectField('Select Account',[validators.Required("")])
+    category = SelectField('Select Category',[validators.Required("")])
+    goal = SelectField('Apply to Goal (optional)',[validators.Optional("optional")])
+    notes = TextField("Add Notes (optional)",  [validators.optional("optional")])
+    amount = DecimalField("Enter Amount",  [validators.Required("Please enter an Amount.")])
+    submit = SubmitField("Submit Transaction")
     
     def __init__(self, *args, **kwargs):
         Form.__init__(self, *args, **kwargs)

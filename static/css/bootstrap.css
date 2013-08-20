@@ -5919,14 +5919,14 @@ a.badge:focus {
 
 .progress-warning .bar,
 .progress .bar-warning {
-  background-color: #faa732;
-  background-image: -moz-linear-gradient(top, #fbb450, #f89406);
-  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#fbb450), to(#f89406));
-  background-image: -webkit-linear-gradient(top, #fbb450, #f89406);
-  background-image: -o-linear-gradient(top, #fbb450, #f89406);
-  background-image: linear-gradient(to bottom, #fbb450, #f89406);
+  background-color: #ffff55;
+  background-image: -moz-linear-gradient(top, #fafd2e, #f89600);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#fafd2e), to(#f89600));
+  background-image: -webkit-linear-gradient(top, #fafd2e, #f89600);
+  background-image: -o-linear-gradient(top, #fafd2e, #f89600);
+  background-image: linear-gradient(to bottom, #fafd2e, #f89600);
   background-repeat: repeat-x;
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fffbb450', endColorstr='#fff89406', GradientType=0);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fafd2e', endColorstr='#f89600', GradientType=0);
 }
 
 .progress-warning.progress-striped .bar,
