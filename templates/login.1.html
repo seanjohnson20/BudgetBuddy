@@ -1,0 +1,20 @@
+{% extends "template.html" %}
+{% block content %}
+
+<h4>Please login to access your accounts</h4>
+    <table>
+    <form action="" method="post">
+        <tr>
+            <td>Username: <input type="text" name="username" value="{{
+        request.form.username }}"></td>
+            <td>Password: <input type="password" name="password" value="{{
+        request.form.password }}"></td>
+        </tr>
+        <tr>
+            <td><a class='button'  href="/help">Help</a>&nbsp;
+            <a class='button'  href="/addUser">Register</a></td>
+            <td><input class='button' type="submit" value="Login"></td>
+        </tr>
+    </form>
+
+{% endblock %}

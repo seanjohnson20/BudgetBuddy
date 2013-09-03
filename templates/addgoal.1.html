@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+<div id="tabs">
+  <ul>
+    <li><a href="#tabs-1">Add Goal</a></li>
+  </ul>
+<div id="tabs-1">
+  <form action="{{ url_for('add_goal') }}" method=post>
+    {{ form.hidden_tag() }}
+   
+    {{ form.category.label }}
+    {{ form.category }}
+    {% for message in form.category.errors %}
+    <div class="flash">{{ message }}</div>
+    {% endfor %}
+    
+    {{ form.description.label }}
+    {{ form.description }}
+    {% for message in form.description.errors %}
+    <div class="flash">{{ message }}</div>
+    {% endfor %}
+    
+    {{ form.target.label }}
+    {{ form.target }}
+    {% for message in form.target.errors %}
+    <div class="flash">{{ message }}</div>
+    {% endfor %}
+
+    
+    {{ form.amount.label }}
+    {{ form.amount }}
+    {% for message in form.amount.errors %}
+    <div class="flash">{{ message }}</div>
+    {% endfor %}
+    
+
+    {{ form.submit }}
+  </form>
+</div> <!-- end tabs-1-->
+</div><!-- end tabs-->
+</div><!-- end container-->
+{% endblock %}
