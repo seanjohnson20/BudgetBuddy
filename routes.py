@@ -11,15 +11,17 @@ from forms import SignupForm, SigninForm, TransactionForm, AccountForm, Category
 from functools import wraps
 from sqlalchemy import func
 from datetime import date, datetime
+import stripe
+from config import *
 
 today = date.today()
  
 app = Flask(__name__)
-app.config.from_object('config')
+
+stripe.api_key = stripe_keys['secret_key']
 
 
 ## -----------------------No Login Required ------------------------------ ##
-
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     form = SignupForm()
@@ -55,9 +57,9 @@ def signin():
             flash('You are logged in')
             print (str(session['email']),'is logged in') 
         return redirect(url_for('home'))
-                
+
     elif request.method == 'GET':
-        return render_template('signin.html', form=form)      
+        return render_template('signin.html', form=form, key=stripe_keys['publishable_key'])      
         
         
 @app.route("/")
@@ -66,8 +68,27 @@ def index():
         print (str(session['email']),'is on Index')
     else:
         print('Guest is on Index')
+    return render_template('index.html', key=stripe_keys['publishable_key'])
+    
+    
+@app.route('/charge', methods=['POST'])
+def charge():
+    # Amount in cents
+    amount = 199
 
-    return render_template('index.html')
+    customer = stripe.Customer.create(
+        email=session['email'],
+        card=request.form['stripeToken']
+    )
+
+    charge = stripe.Charge.create(
+        customer=customer.id,
+        amount=amount,
+        currency='usd',
+        description='BudgetBuddy Charge'
+    )
+
+    return render_template('charge.html', amount=amount)
     
 # End User - Terms of Use 
 @app.route("/terms/")
@@ -111,7 +132,6 @@ def login_required(test):
             return redirect(url_for('signin'))
     return wrap
 
-    
 @app.route("/home/")
 @login_required
 def home():
@@ -142,7 +162,7 @@ order by goals.category""", {"param":session['email']} )
     categories = con.execute("select categories.id, categories.name, ifnull(round(sum(transactions.amount),2),0) as 'sum' from categories left join transactions on categories.name=transactions.category and categories.email=transactions.email where categories.email=:param group by categories.name order by categories.name", {"param":session['email']} )
     
     print (str(session['email']),'is on Home')
-    return render_template('home.html', accounts=accounts, transactions=transactions, categories=categories, goals=goals, progress=progress, today=today)   
+    return render_template('home.html', accounts=accounts, transactions=transactions, categories=categories, goals=goals, progress=progress, today=today, key=stripe_keys['publishable_key'])   
 
     
 @app.route("/add_goal/", methods=['GET', 'POST'])
@@ -350,7 +370,6 @@ def mod_cat():
         return redirect(url_for('home'))
     return render_template('editcat.html', form=form) 
 
-        
 # Delete transactions:
 @app.route('/delete_trans/<int:id>/',)
 @login_required
@@ -361,7 +380,6 @@ def delete_trans(id):
     print (str(session['email']), 'deleted transaction ID: ', id)
     return redirect(url_for('home'))
     
-
     
 # Delete account:
 @app.route('/delete_acct/<int:id>/',)
@@ -394,32 +412,6 @@ def delete_goal(id):
     return redirect(url_for('home'))        
     
     
-@app.route("/profile/")
-@login_required
-def profile():
-    if 'email' in session:
-        print (str(session['email']),'is on Profile')
-    else:
-        print('Guest is on Profile ... and this should never happen')
-        
-    usr = str(session['email'])
-    #transactions by session user
-    transactions = db_session.query(Transactions).filter(Transactions.email==usr).all()
-    
-    #accounts by session user
-    accounts = db_session.query(Accounts).filter(Accounts.email==usr).all()
-    
-    #categories by session user
-    categories = db_session.query(Categories).filter(Categories.email==usr).all()
-    cat_cnt = db_session.query(func.count(Categories.id)).filter(Categories.email==usr)
-  
-    #progress by session user
-    con=engine.connect()
-    progress = con.execute("select transactions.category, sum(transactions.amount) as sum, goals.goal, ((sum(transactions.amount)/goals.goal )*100) as progress from transactions, goals where transactions.category=goals.category and transactions.email=:param group by transactions.category", {"param":session['email']} )
-        
-    return render_template('profile.html', progress=progress)
-    
-    
 @app.route('/signout')
 @login_required
 def signout():
@@ -430,8 +422,13 @@ def signout():
     session.pop('email', None)
     return redirect(url_for('index'))
     
-## Error Handlers ##
+## Stripe Handlers ##
+@app.route('/members')
+def members():
+    return render_template('members.html', key=stripe_keys['publishable_key'])
 
+    
+## Error Handlers ##
 @app.errorhandler(500)
 def internal_error(error):
     #db_session.rollback()
@@ -441,13 +438,12 @@ def internal_error(error):
 def internal_error(error):
     return render_template('404.html'), 404
 
-if not app.debug:
-    file_handler = FileHandler('error.log')
-    file_handler.setFormatter(Formatter('%(asctime)s %(levelname)s: %(message)s '
-    '[in %(pathname)s:%(lineno)d]'))
-    app.logger.setLevel(logging.INFO)
-    file_handler.setLevel(logging.INFO)
-    app.logger.addHandler(file_handler)
-    app.logger.info('errors')
+# if not app.debug:
+    # file_handler = FileHandler('error.log')
+    # file_handler.setFormatter(Formatter('%(asctime)s %(levelname)s: %(message)s '
+    # '[in %(pathname)s:%(lineno)d]'))
+    # app.logger.setLevel(logging.INFO)
+    # file_handler.setLevel(logging.INFO)
+    # app.logger.addHandler(file_handler)
+    # app.logger.info('errors')
     
-
